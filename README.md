@@ -19,8 +19,11 @@ Note: TFS only works with Python2
 ### How to export your Keras model to use with TFS
 
 Code examples:
+
 https://github.com/krystianity/keras-serving/blob/master/export.py
+
 https://blog.keras.io/keras-as-a-simplified-interface-to-tensorflow-tutorial.html#exporting-a-model-with-tensorflow-serving
+
 
 I'm using a script that scans a tree if directories and runs subprocess to export the model.
 Be careful, you can't export multiple models in a single Python process. Each additional
@@ -30,7 +33,8 @@ hence my subprocess thing.
 Example snippet:
 
 ```python
-# Don't import tf here, your Python script shouldn't know what tf/keras is, all this is contained within a subprocess
+# Don't import tf here, your Python script shouldn't know what tf/keras is,
+# all this is contained within a subprocess
 
 def export_tfs(dst_dir, model_name):
     """
@@ -87,9 +91,11 @@ You should provide path to X in TFS config file later.
 
 https://docs.bazel.build/versions/master/install-ubuntu.html
 
+```sh
 echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
 curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
 sudo apt-get update && sudo apt-get install bazel
+```
 
 2) Follow the guide to install all prerequisites for TFS, but don't clone TFS just yet
 
@@ -129,7 +135,9 @@ bazel test tensorflow_serving/...
 
 There are examples on internet that don't use config file and specify path to model in cmdline, but config file
 allows to serve multiple models with a single TFS server
+
 Credit: https://stackoverflow.com/a/43745791
+
 
 Example of tfserving.conf file:
 
@@ -157,10 +165,13 @@ model_config_list: {
 ### How to build a client script that would interact with running TFS
 
 That's the most difficult part.
+
 Directory structure reminder:
+
 ~/client/serving - that's where TFS is
 
 1) Go to ~/client and create following files there:
+
 
 ~/client/WORKSPACE
 
@@ -209,6 +220,7 @@ py_binary(
     ],
 )
 ```
+
 
 ~/client/my_api_gw.py
 
@@ -260,8 +272,10 @@ bazel build my_api_gw    # as in BUILD file
 
 https://github.com/tensorflow/serving/issues/421
 
+```sh
 cd ~/client
 vim bazel-bin/my_api_gw.runfiles/org_tensorflow/tensorflow/contrib/image/__init__.py
+```
 
 Go to imports section and comment out following line:
 
@@ -284,11 +298,15 @@ user@pc ~/client % bazel-bin/my_api_gw
   ```
 
 - TFS source tree has subpackage "tensorflow". When you run "./configure" you do configure just "tensorflow"
+
   You could build TF with Python3, but when you build the client it will rebuild TF and here you can't tell it
   to use Python3.
+  
   If you do force Python3 then TF will compile correctly, but TFS doesn't support Python3 at all, it will try
   to use 2to3 automatic conversion that fails.
+  
   There is no way, while building the client, to make so that TF is compiled for Python3 and TFS for Python2.
+  
   If you modify BUILD file to build everything for Python3 the TF will still be build for Python2 and your client
   will fail at runtime like this:
   ```
@@ -296,7 +314,10 @@ user@pc ~/client % bazel-bin/my_api_gw
   ```
 
 - There is a package on Github that claims to be a simplified version of all this mess.
+
   It is not flexible enough, but would provide a good starting point for modification.
-  Guess what, it doesn't work with recent versions of TF/TFS.
+
+  Guess what, it didn't work for me with recent versions of TF/TFS.
+  
   https://github.com/sebastian-schlecht/tensorflow-serving-python
 
