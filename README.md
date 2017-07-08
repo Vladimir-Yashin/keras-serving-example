@@ -1,5 +1,8 @@
 ## How to install TF Serving for Keras models
 
+```Jul 8, 2017, Ubuntu 16.04, TF 1.2.1, Python2.7, bazel 0.5.2```
+
+
 These are the notes that could help you to export your trained Keras
 model(s), run Tensorflow Serving gRPC server to provide an API
 and then have a Python scripts making calls to it over gRPC.
